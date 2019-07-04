@@ -2,49 +2,118 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\User;
-use Datatables;
-use Yajra\DataTables\Facades\DataTables as YajraDataTables;
+use DB;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
-
-       return view('users');
+//        $users = User::all();
+        $users= DB::table('users')->paginate(8);
+        return view('admin/users' ,compact('users'));
     }
 
-    public function delete($id)
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
     {
-        $users=User::find($id);
-  
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        if ($request->isMethod('post')) {
+            $this->validate($request, [
+                'name' => 'required|max:25|unique:users'
+            ]);
+            $users = new User();
+            $users->name = $request->input('name');
+            $users->save();
+        }
+        return redirect('admin/users');
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        $userData = User::find($id);
+
+        return view('admin/edits/editUsers',compact('userData'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        if ($request->isMethod('PUT')) {
+            $this->validate($request, [
+                'name' => 'required|max:25|',
+                'email' => 'required|max:50|',
+                'isAdmin' => 'required|max:1|',
+            ]);
+            $users= User::find($id);
+            $users->name = $request->input('name');
+            $users->email = $request->input('email');
+            $users->isAdmin = $request->input('isAdmin');
+            $users->save();
+
+        }
+        return redirect('/admin/users');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $users =User::find($id);
+
         $users->delete();
-        return view('users');
+        return redirect('/admin/users');
     }
-
-
-      function getdata()
-    {
-        //$users = User::select(['id','name','email','created_at','updated_at']);
-    
-        return YajraDataTables::of(User::all())
-        ->addColumn('action', function ($user) {
-            return '<a href="'.$user->id.'" class="btn btn-xs btn-primary edit"><i class="glyphicon glyphicon-edit"></i> Edit</a> 
-                    <a href="users/'.$user->id.'" class="btn btn-xs btn-danger delete"><i class="glyphicon glyphicon-delete"></i> Delete</a> ';
-        })
-      
-        // ->editColumn('id', 'ID: {{$id}}')
-        ->editColumn('created_at', function (User $user){
-            return $user->created_at->diffForHumans();
-        })
-        ->editColumn('updated_at', function (User $user){
-            return $user->updated_at->diffForHumans();
-        })
-      
-        ->make(true);
-    }
-
- 
 }

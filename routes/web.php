@@ -1,5 +1,4 @@
 <?php
-// use Illuminate\Routing\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,45 +11,79 @@
 |
 */
 
-Route::group(['prefix' => LaravelLocalization::setLocale()] , function(){
-    
-    Route::get('/' , function () {
-        return view('welcome');
-    });
-
-    Route::get('/about', function () {
-        return view('about' );
-    });
-
-    Route::get('/mobile', function () {
-        return view('mobile');
-    });
-    Route::get('/web', function () {
-        return view('web_development');
-    });
-    Route::get('/digital', function () {
-        return view('digital');
-    });
-    
-    Route::resource('/contact-us', 'ToucheController');
-
-    Route::resource('/hire', 'JoinController');
-
+Route::get('/', function () {
+    return view('welcome');
 });
-
-
 
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/master', function (){return view('layouts/master');})->name('master');
+
+
+// Route of admins
 
 Route::namespace('Admin')->group(function () {
-    Route::resource('dashborad', 'AdminController');
-    Route::resource('join', 'JoinController');
-    Route::resource('ajaxcrud', 'AjaxCrudController');
+
+    Route::prefix('admin')->group(function (){
+
+        Route::resource('users'   ,'UserController');
+        Route::resource('position'   , 'PositionController');
+
+        Route::resource('religion'   , 'ReligionController');
+        Route::resource('degree'     ,'DegreeController');
+        Route::resource('grade'      ,'GradeController');
+        Route::resource('language'   ,'LanguageController');
+        Route::resource('languagelevel'   ,'LanguagelevelController');
+        Route::resource('currency'   ,'CurrencyController');
+        Route::resource('career'   ,'CareerlevelController');
+
+        // Uses first & second Middleware
+
+    });
 
 });
 
-Route::get('users', [ 'as'=>'data' ,'uses'=>'Admin\UserController@index']);
-Route::get('users/getdata', [ 'as'=>'data.getdata' ,'uses'=>'Admin\UserController@getdata']);
-Route::delete('users/{id}', [ 'as'=>'data.delete' ,'uses'=>'Admin\UserController@delete']);
+
+Route::namespace('User')->group(function () {
+
+    Route::prefix('users')->group(function (){
+
+        Route::resource('personal'   ,'PersonalController');
+        Route::resource('employement'   ,'EmployementController');
+        Route::resource('experience'   ,'ExperienceController');
+        Route::resource('education'   ,'EducationController');
+
+        Route::resource('educations'   ,'UniversityController');
+        Route::resource('course'   ,'CourseController');
+        Route::resource('skills'   ,'SkillController');
+        Route::resource('languages'   ,'LanguagelistController');
+        Route::resource('onlinePersence'   ,'OnlinePersenceController');
+        Route::resource('certification'   ,'CertifationController');
+        Route::resource('profile'   ,'ProfileController');
+        Route::resource('reset'   ,'ResetPasswordController');
+
+
+       // Route::resource('education'   ,'UniversityController');
+
+
+
+
+        // Uses first & second Middleware
+
+    });
+});
+
+
+Route::namespace('company')->group(function () {
+
+    Route::prefix('company')->group(function (){
+
+        Route::resource('company'   ,'CompanyController');
+
+        // Uses first & second Middleware
+
+    });
+});
+
+
