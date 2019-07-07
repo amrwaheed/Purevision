@@ -91,9 +91,13 @@
                             @endif
                             @if(! \App\ModelsUser\OnlinePersence::where('user_id',auth()->user()->id))
                                     <li class="@yield('online_presence')"><a href="{{route('onlinePersence.index')}}">Online Presence</a></li>
+                                @else
+                                    <li class="@yield('online_presence')"><a href="/users/onlinePersence/{{auth()->user()->id}}/edit">Online Presence</a></li>
                             @endif
                             @if(! \App\ModelsUser\CertifationInformation::where('user_id',auth()->user()->id))
                                     <li class="@yield('certification')"><a href="{{route('certification.index')}}">Certification Presence</a></li>
+                                @else
+                                    <li class="@yield('certification')"><a href="/users/certification/{{auth()->user()->id}}">Certification Information</a></li>
                             @endif
 
                             </ul>
